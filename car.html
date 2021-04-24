@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin:0px;
+            padding:0px;
+            cursor:pointer;
+        }
+        .hide {
+            display: none;
+        }
+
+        .car {
+            width: 2.7vw;
+            height: 8.6vh;
+            background-color: blue;
+            position: absolute;
+            left: 30vw;
+            top:  80vh;
+            z-index: 10;
+            border-top-left-radius:19px ;
+            border-top-right-radius:19px;
+            border-bottom-left-radius:9px ;
+            border-bottom-right-radius:9px ;
+            background-image: url("---pngtree---blue-car-top-view.png");
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+
+        }
+
+        .gamearea {
+            margin: auto;
+            height: 100vh;
+            width: 40vw;
+            background-color: rgb(48, 46, 46);
+            border-left: 10px solid white;
+            border-right: 10px solid white;
+        
+            cursor: none;
+        }
+
+        .line{
+               height: 10vh;
+               width:1vw;
+               position:absolute;
+               background-color:white; 
+               left: 49.3vw;
+               top:  0vh;
+               z-index: 6;
+        }
+        .enemy{
+               height: 8.2vh;
+               width:2.7vw;
+               position:absolute;
+               background-color:rgb(202, 66, 66); 
+               left: 49.3vw;
+               top:  0vh;
+               z-index: 6;
+               border-top-left-radius:5px ;
+            border-top-right-radius:5px;
+            border-bottom-left-radius:13px ;
+            border-bottom-right-radius:13px ;
+            /* background-image: url("p1.png"); */
+            background-repeat: no-repeat;
+          
+            background-size: 100% 100%;
+
+
+               /* background-image: url("Webp.net-resizeimage.png");
+            background-repeat: no-repeat;
+            background-size: 100% 100%; */
+        }
+        .score{
+            position: absolute;
+            left:4vw;
+            top:6vh;
+            height: 7vh;
+            width:12vw;
+            text-align: center;
+            background-color: rgb(7, 185, 185);
+            color: white;
+            padding-top: 22px;
+            font-size: 24px;
+            /* box-shadow: 5px 4px 7px rgb(7, 211, 211) ; */
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            border-radius: 5px;
+
+            
+        }
+        .speed{
+            position: absolute;
+            left:81vw;
+            top:6.3vh;
+            height: 7vh;
+            width:12vw;
+            text-align: center;
+            background-color: rgb(7, 185, 185);
+            color: white;
+            padding-top: 22px;
+            padding-left: 44px;
+            font-size: 20px;
+            /* box-shadow: 5px 4px 7px rgb(7, 211, 211) ; */
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            border-radius: 5px;
+        }
+        #jj{
+            position: absolute;
+            left:80.3vw;
+            top:7.4vh;
+            height: 7vh;
+            width:8vw;
+        }
+        .startscreen{
+            position: absolute;
+            left:25vw;
+            top:40vh;
+            color: white;
+            background-color: rgb(241, 105, 55);
+            /* box-shadow: 5px 4px 7px rgb(231, 128, 59) ; */
+            height: 13vh;
+            width:50vw;
+            text-align: center;
+            padding-top: 19px;
+            border-radius: 5px;
+            font-size: 20px;
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            z-index: 20;
+
+
+        }
+        .cargame{
+            
+            background-image: url("—Pngtree—background\ design\ in\ autumn\ in_1206920.jpg");
+            
+         
+            z-index: -400;
+        }
+       
+       
+    </style>
+</head>
+
+<body>
+    <div class="cargame">
+        <div class="score"></div>
+        <div class="speed"></div>
+        <div><img id="jj" src="speed.png" alt="" srcset=""></div>
+
+        <div class="startscreen">
+            <p>Press To Start<br>
+            Arrow Keys to Move<br>
+        If you hit by another car you will lose</p>
+
+        </div>
+        <div class="gamearea "></div>
+        <audio class="mysong">
+            <source src="preview.mp4" type="audio/mp4">
+        </audio>
+     
+      
+       
+        
+    </div>
+</body>
+<script>
+    let object = {
+        ArrowUp: false,
+        ArrowDown: false,
+        ArrowLeft: false,
+        ArrowRight: false,
+
+    }
+    let player = {
+     start:true,
+     score:0,
+     speed:0
+
+    }
+    let score = document.querySelector('.score');
+    let startscreen = document.querySelector('.startscreen');
+    let gamearea = document.querySelector('.gamearea');
+    let speed=document.querySelector('.speed');
+    let cargame=document.querySelector('.cargame');
+
+
+    // use start not start();syntax
+    startscreen.addEventListener('click', start);
+
+    // run(e) is syntax
+    document.addEventListener('keydown', function run(e) {
+        object[e.key] = true;
+        // console.log(e.key);
+        // console.log(object);
+    })
+    document.addEventListener('keyup', function run(e) {
+        object[e.key] = false;
+        // console.log(e.key);
+        // console.log(object);
+    })
+
+
+
+    function iscollid(a,b){
+        aRect=a.getBoundingClientRect();
+        bRect=b.getBoundingClientRect();
+
+        return !((aRect.bottom<bRect.top)||(aRect.top>bRect.bottom)||(aRect.right<bRect.left)||(aRect.left>bRect.right))
+    }
+     
+     function movelines(){
+
+        let roadline=document.querySelectorAll(".line");
+        roadline.forEach(function(item){
+
+            if(item.y>=87)
+            {
+                item.y -=92;
+                
+            }
+            
+            item.y+=0.8+(player.score/5000);
+            item.style.top=item.y+"vh";
+
+        });
+
+     }
+  
+
+     function endgame(){
+         player.start=false;
+         startscreen.classList.remove('hide');
+         player.speed=0;
+         startscreen.innerHTML="Game Over<br>Your final Score is "+player.score+"<br>Press here to restart";
+        //  gamearea.style.cursor=pointer;
+
+        }
+
+     function moveenemy(car){
+
+let roadenemy=document.querySelectorAll(".enemy");
+roadenemy.forEach(function(item){
+
+   if(iscollid(car,item)){
+    
+       console.log("HIT");
+       endgame();
+   } 
+
+    if(item.y>=84)
+    {   
+        item.y -=92;
+        item.style.left=Math.floor((Math.random()*(0.38)+0.30)*100)+"vw";
+    }
+    item.y+=1.2+(player.score/5000);
+
+   
+
+    item.style.top=item.y+"vh";
+
+
+
+});
+
+}
+
+   
+
+
+
+
+    function gameplay() {
+        let car = document.querySelector('.car');
+        // console.log("jeevesh garg");
+
+        // give dimensions of road(it is very very important function)
+        let road = gamearea.getBoundingClientRect();
+        // console.log(road);
+
+        let creata= car.getBoundingClientRect();
+        // console.log(creata);
+
+        movelines();
+        moveenemy(car);
+
+        let mysong=document.querySelector('.mysong');
+      mysong.play();
+      
+        if(player.start==false)
+        {
+          mysong.pause();
+          mysong.currentTime=0;
+
+        }
+
+       
+
+        if (player.start) {
+            if (object.ArrowUp && player.y>53.4) { player.y -= 6.5 +(player.score/730)}
+            if (object.ArrowDown && player.y<road.bottom-160) { player.y += 6.5+(player.score/730) }
+            if (object.ArrowLeft && player.x>road.left+6) { player.x -= 6.5 +(player.score/730)}
+            if (object.ArrowRight && player.x<road.right-creata.width-4) { player.x += 6.5 +(player.score/730)}
+
+            car.style.top = player.y + "px";
+            car.style.left = player.x + "px";
+
+
+            window.requestAnimationFrame(gameplay);
+           
+            player.score++;
+            score.innerHTML= "score: "+player.score;
+
+        
+
+            if (object.ArrowUp && player.y>53.4) { player.speed=player.speed+5;}
+           else if (object.ArrowDown && player.y<road.bottom-160) { player.speed=player.speed-5; }
+           else if (object.ArrowLeft && player.x>road.left+6) { player.speed=player.speed+3; }
+           else if (object.ArrowRight && player.x<road.right-creata.width-4) { player.speed=player.speed+3;}
+
+           else{
+            player.speed=player.speed+1;
+           }
+
+           speed.innerHTML=(20+Math.floor(player.speed/80))+" Km/h";
+
+           
+            
+        }
+
+
+    }
+    function start() {
+
+        player.start= true;
+        player.score=0;
+
+        
+
+        // add class in any particular element
+        startscreen.classList.add('hide');
+        // gamearea.classList.remove('hide');
+        gamearea.innerHTML='';
+
+        // gamearea.style.cursor=none;
+
+       
+        
+        
+
+
+        window.requestAnimationFrame(gameplay);
+
+
+        // form inner structure using Js
+        let car = document.createElement('div');
+        car.setAttribute('class', 'car');
+        // car.innerHTML="jeevesh bad bay";
+        gamearea.appendChild(car);
+
+        for(x=0;x<8;x++)
+        {
+            let line = document.createElement('div');
+            line.setAttribute('class', 'line');
+            line.y=(x*12.83);
+            line.style.top=line.y+"vh";
+            gamearea.appendChild(line);
+
+        }
+
+
+        
+
+        // print location
+        // console.log(car.offsetLeft);
+        // console.log(car.offsetTop);
+
+        player.x = car.offsetLeft;
+        player.y = car.offsetTop;
+
+        for(x=0;x<3;x++)
+        {
+            let enemy = document.createElement('div');
+            enemy.setAttribute('class', 'enemy');
+            enemy.y=(x*30);
+
+            if(x==0)
+            {
+                enemy.style.backgroundImage="url('p1.png')";
+            }
+            else if(x==2)
+            {
+                enemy.style.backgroundImage="url('p2.png')";
+            }
+            else{
+                enemy.style.backgroundImage="url('p3.png')";
+                enemy.style.height=8.5+"vh";
+            }
+            
+           
+            enemy.style.top=enemy.y+"vh";
+            enemy.style.left=Math.floor((Math.random()*(0.26)+0.40)*100)+"vw";
+            gamearea.appendChild(enemy);
+
+        }
+        
+
+    }
+
+
+</script>
+
+</html>
